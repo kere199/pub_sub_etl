@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
@@ -9,4 +9,4 @@ COPY main.py .
 
 ENV PORT=8080
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8080", "main:positive_function"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "main:app"]

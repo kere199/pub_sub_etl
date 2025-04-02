@@ -1,5 +1,6 @@
-functions-framework==3.*
-google-cloud-language==2.13.0
-google-cloud-secret-manager==2.16.0
-requests==2.31.0
-gunicorn==20.1.0
+flask==3.0.3  # Latest stable version as of April 2025
+google-cloud-language==2.13.4  # Latest compatible version
+google-cloud-secret-manager==2.20.0  # Latest version
+requests==2.32.3  # Latest version
+gunicorn==23.0.0  # Latest version
+werkzeug==3.0.4  # Compatible with Flask 3.0.3

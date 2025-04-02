@@ -26,7 +26,7 @@ def send_slack_message(token, channel, message):
 
 @app.route('/', methods=['POST'])
 def positive_function():
-    # Parse the Pub/Sub push message
+    """Process Pub/Sub push message and send positive feedback to Slack."""
     if not request.is_json:
         return 'Invalid request: Expected JSON', 400
 
@@ -34,18 +34,15 @@ def positive_function():
     if 'message' not in envelope:
         return 'Invalid Pub/Sub message: Missing message field', 400
 
-    # Decode the message data
     message_data = envelope['message']['data']
     decoded_data = base64.b64decode(message_data).decode('utf-8')
     feedback = json.loads(decoded_data)
     text = feedback['message']
 
-    # Analyze sentiment
     client = language_v1.LanguageServiceClient()
     document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
     sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
 
-    # Send to Slack if positive
     if sentiment.score > 0.25:
         slack_token = access_secret('slacktoken', '1046723826220')
         channel = 'C08KN71G5S7'  # Positive channel ID
