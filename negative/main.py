@@ -1,9 +1,12 @@
-import functions_framework
+import os
 import json
 import base64
 from google.cloud import language_v1
 from google.cloud import secretmanager
 import requests
+from flask import Flask, request
+
+app = Flask(__name__)
 
 def access_secret(secret_id: str, project_id: str) -> str:
     client = secretmanager.SecretManagerServiceClient()
@@ -21,9 +24,9 @@ def send_slack_message(token, channel, message):
         print(f"Failed to send Slack message: {response.text}")
     return response.ok
 
-@functions_framework.http
-def negative_function(request):
-    # Parse the Pub/Sub push message
+@app.route('/', methods=['POST'])
+def negative_function():
+    """Process Pub/Sub push message and send negative feedback to Slack."""
     if not request.is_json:
         return 'Invalid request: Expected JSON', 400
 
@@ -31,18 +34,15 @@ def negative_function(request):
     if 'message' not in envelope:
         return 'Invalid Pub/Sub message: Missing message field', 400
 
-    # Decode the message data
     message_data = envelope['message']['data']
     decoded_data = base64.b64decode(message_data).decode('utf-8')
     feedback = json.loads(decoded_data)
     text = feedback['message']
 
-    # Analyze sentiment
     client = language_v1.LanguageServiceClient()
     document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
     sentiment = client.analyze_sentiment(request={'document': document}).document_sentiment
 
-    # Send to Slack if negative (score < -0.25 for consistency with your task)
     if sentiment.score < -0.25:
         slack_token = access_secret('slacktoken', '1046723826220')
         channel = 'CH83QLHLY'  # Negative channel ID
@@ -50,3 +50,7 @@ def negative_function(request):
         send_slack_message(slack_token, channel, slack_message)
         return 'Negative message processed and sent to Slack', 200
     return 'Message processed (not negative)', 200
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)

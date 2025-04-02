@@ -1,5 +1,6 @@
-functions-framework==3.*
-google-cloud-language==2.13.0
-google-cloud-secret-manager==2.16.0
-requests==2.31.0
-gunicorn==20.1.0
+flask==3.0.3
+google-cloud-language==2.13.4
+google-cloud-secret-manager==2.20.0
+requests==2.32.3
+gunicorn==23.0.0
+werkzeug==3.0.4
