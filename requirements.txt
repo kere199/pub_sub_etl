@@ -1,6 +1,7 @@
 functions-framework==3.*
 google-cloud-language
 google-cloud-secret-manager
+google-cloud-pubsub
 requests
 gunicorn
 werkzeug<3.0.0  
